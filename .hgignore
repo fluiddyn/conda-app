@@ -1,0 +1,18 @@
+syntax: glob
+
+.vscode/
+*~
+*.pyc
+
+build/*
+dist/*.tar.gz
+dist*
+.tox/*
+.coverage/*
+
+**/tmp*.py
+
+.pytest_cache
+.mypy_cache
+
+*.egg-info/*
