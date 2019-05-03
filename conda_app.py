@@ -110,7 +110,10 @@ def install_app(app_name):
             if os.name == "nt":
                 with open(path_bin / (command + ".bat"), "w") as file:
                     file.write(
-                        f"@echo off\nconda run -n {env_name} {command} %*\n"
+                        "@echo off\n"
+                        f"call conda activate {env_name}\n"
+                        f"{command} %*\n"
+                        "call conda deactivate\n"
                     )
             else:
                 path_command = env_path / "bin" / command
