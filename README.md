@@ -41,5 +41,5 @@ one should be able to install Mercurial (plus few important extensions) with:
 conda-app install mercurial
 ```
 
-**Open a new terminal** (on Windows, "Conda Prompt" or "Command Prompt") and
-the Mercurial command `hg` should be available.
+**Open a new terminal** (on Windows, the "Conda Prompt") and the Mercurial 
+command `hg` should be available.

@@ -2,52 +2,11 @@ import os
 from pathlib import Path
 import json
 import argparse
+import subprocess
 
 from conda.cli.python_api import run_command
 
-# Windows support taken from https://stackoverflow.com/a/1146404
-try:
-    from winreg import (
-        CloseKey,
-        OpenKey,
-        QueryValueEx,
-        SetValueEx,
-        HKEY_CURRENT_USER,
-        HKEY_LOCAL_MACHINE,
-        KEY_ALL_ACCESS,
-        KEY_READ,
-        REG_EXPAND_SZ,
-    )
-except ImportError:
-    pass
-
 commands_app = {"mercurial": ["hg"], "tortoisehg": ["hg", "thg"]}
-
-
-def env_keys(user=True):
-    if user:
-        root = HKEY_CURRENT_USER
-        subkey = "Environment"
-    else:
-        root = HKEY_LOCAL_MACHINE
-        subkey = r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment"
-    return root, subkey
-
-
-def get_env(name, user=True):
-    root, subkey = env_keys(user)
-    key = OpenKey(root, subkey, 0, KEY_READ)
-    try:
-        value, _ = QueryValueEx(key, name)
-    except WindowsError:
-        return ""
-    return value
-
-
-def set_env(name, value):
-    key = OpenKey(HKEY_CURRENT_USER, "Environment", 0, KEY_ALL_ACCESS)
-    SetValueEx(key, name, 0, REG_EXPAND_SZ, value)
-    CloseKey(key)
 
 
 def modif_config_file(path_config, line_config):
@@ -79,13 +38,16 @@ def install_app(app_name):
     path_root = data_conda["root_prefix"]
 
     if data_conda["root_writable"]:
-        path_bin = Path(path_root) / "condabin/app"
+        if os.name == "nt":
+            # quickfix: I wasn't able to permanently set the PATH on Windows
+            path_bin = Path(path_root) / "condabin"
+        else:
+            path_bin = Path(path_root) / "condabin/app"
     else:
         if not os.name == "nt":
             path_bin = Path.home() / ".local/bin/conda-app"
         else:
-            # TODO: a better PATH for Windows?
-            path_bin = Path.home() / "bin/conda-app"
+            raise NotImplementedError
     path_bin.mkdir(exist_ok=True, parents=True)
 
     # Bash
@@ -96,14 +58,6 @@ def install_app(app_name):
         Path.home() / ".config/fish/config.fish",
         f"set -gx PATH {path_bin} $PATH\n",
     )
-
-    # Windows
-    if os.name == "nt":
-        PATH = get_env("PATH")
-        path_bin = str(path_bin)
-        if path_bin not in PATH:
-            PATH = path_bin + ";" + PATH
-            set_env("PATH", PATH)
 
     env_name = "_env_" + app_name
     envs = data_conda["envs"]
@@ -136,7 +90,7 @@ def install_app(app_name):
         print("done")
 
         if app_name == "mercurial":
-            print("Install hg-git with pip")
+            print("Install hg-git with pip... ", end="")
             run_command(
                 "run",
                 "-n",
@@ -145,6 +99,7 @@ def install_app(app_name):
                 "install",
                 "hg+https://bitbucket.org/durin42/hg-git",
             )
+            print("done")
 
         try:
             commands = commands_app[app_name]
@@ -152,16 +107,27 @@ def install_app(app_name):
             commands = [app_name]
 
         for command in commands:
-            path_command = env_path / "bin" / command
-            path_symlink = path_bin / command
-            if path_symlink.exists():
-                path_symlink.unlink()
-            path_symlink.symlink_to(path_command)
+            if os.name == "nt":
+                with open(path_bin / (command + ".bat"), "w") as file:
+                    file.write(
+                        f"@echo off\nconda run -n {env_name} {command} %*\n"
+                    )
+            else:
+                path_command = env_path / "bin" / command
+                path_symlink = path_bin / command
+                if path_symlink.exists():
+                    path_symlink.unlink()
+                path_symlink.symlink_to(path_command)
+
+        if os.name == "nt":
+            txt = "T"
+        else:
+            txt = "Open a new terminal and t"
 
         print(
             f"{app_name} should now be installed in\n{env_path}\n"
-            f"Open a new terminal and the command(s) {commands} "
-            "should be available"
+            + txt
+            + f"he command(s) {commands} should be available."
         )
     else:
         print(
