@@ -169,8 +169,8 @@ def main():
 
     args = parser.parse_args()
 
-    if args.command != "install" or args.package_spec != "mercurial":
-        print(args, args.command, args.package_spec != "mercurial")
+    if args.command != "install":
+        print(args, args.command)
         raise NotImplementedError
     else:
         install_app(args.package_spec)
