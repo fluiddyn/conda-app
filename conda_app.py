@@ -20,7 +20,7 @@ def modif_config_file(path_config, line_config):
         if line_config not in lines:
             print(
                 f"Add line \n{line_config.strip()}\n"
-                "at the end of file {path_config}"
+                f"at the end of file {path_config}"
             )
 
             with open(
