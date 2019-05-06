@@ -1,3 +1,9 @@
+|release|
+
+.. |release| image:: https://img.shields.io/pypi/v/conda-app.svg
+   :target: https://pypi.python.org/pypi/conda-app/
+   :alt: Latest version
+
 # Install applications using conda
 
 Tiny conda extension (actually a commandline tool using conda) to install
@@ -6,7 +12,7 @@ applications.
 The main advantages are:
 
 - very simple **cross-platform** installation commands for Windows, macOS and
-  Linux.
+  Linux (and different shells, as bash, fish and zsh).
 
 - the applications are installed in isolated conda environments.
 
@@ -41,5 +47,5 @@ one should be able to install Mercurial (plus few important extensions) with:
 conda-app install mercurial
 ```
 
-**Open a new terminal** (on Windows, the "Conda Prompt") and the Mercurial 
+**Open a new terminal** (on Windows, the "Conda Prompt") and the Mercurial
 command `hg` should be available.

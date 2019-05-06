@@ -2,7 +2,6 @@ import os
 from pathlib import Path
 import json
 import argparse
-import subprocess
 
 from conda.cli.python_api import run_command
 
@@ -10,13 +9,27 @@ commands_app = {"mercurial": ["hg"], "tortoisehg": ["hg", "thg"]}
 
 
 def modif_config_file(path_config, line_config):
+    path_config = Path(path_config)
+    if not line_config.endswith("\n"):
+        line_config = line_config + "\n"
     if path_config.exists():
         with open(path_config) as file:
             lines = file.readlines()
+        if lines and lines[-1] and not lines[-1].endswith("\n"):
+            lines[-1] = lines[-1] + "\n"
         if line_config not in lines:
-            print(f"Add line {line_config} at the end of file {path_config}")
+            print(
+                f"Add line \n{line_config.strip()}\n"
+                "at the end of file {path_config}"
+            )
+
+            with open(
+                path_config.with_name(path_config.name + ".orig"), "w"
+            ) as file:
+                file.write("".join(lines))
+
             with open(path_config, "a") as file:
-                file.write("\n" + line_config + "\n")
+                file.write("\n# line added by conda-app\n" + line_config)
 
 
 def install_app(app_name):
@@ -50,10 +63,14 @@ def install_app(app_name):
             raise NotImplementedError
     path_bin.mkdir(exist_ok=True, parents=True)
 
-    # Bash
-    modif_config_file(Path.home() / ".bashrc", f"export PATH={path_bin}:$PATH\n")
+    export_path_posix = f"export PATH={path_bin}:$PATH\n"
+    # bash
+    modif_config_file(Path.home() / ".bashrc", export_path_posix)
 
-    # Fish
+    # zsh
+    modif_config_file(Path.home() / ".zshrc", export_path_posix)
+
+    # fish
     modif_config_file(
         Path.home() / ".config/fish/config.fish",
         f"set -gx PATH {path_bin} $PATH\n",
