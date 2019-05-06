@@ -1,8 +1,4 @@
-|release|
-
-.. |release| image:: https://img.shields.io/pypi/v/conda-app.svg
-   :target: https://pypi.python.org/pypi/conda-app/
-   :alt: Latest version
+[![release](https://img.shields.io/pypi/v/conda-app.svg)](https://pypi.python.org/pypi/conda-app/)
 
 # Install applications using conda
 
