@@ -26,12 +26,9 @@ pip install conda-app
 **Warning**
 
 Note that conda-app needs Python >= 3.6, so if your base environment still uses
-Python 2.7, you first need to update it::
+Python 2.7, you first need to update it with `conda update conda` and `conda
+install python=3`.
 
-```
-conda update conda
-conda install python=3
-```
 -----------
 
 ## Example
