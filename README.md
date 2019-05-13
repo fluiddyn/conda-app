@@ -17,6 +17,7 @@ The main advantages are:
 
 ## Installation of conda-app
 
+conda-app needs to be installed in the `base` conda environment:
 ```
 conda activate base
 pip install conda-app
