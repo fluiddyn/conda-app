@@ -14,7 +14,9 @@ if os.name == "nt":
 else:
     data_dir = ".local/share"
 
-path_data = Path.home() / data_dir / "conda-app.json"
+data_dir = Path.home() / data_dir
+data_dir.mkdir(exist_ok=True, parents=True)
+path_data = data_dir / "conda-app.json"
 
 
 def query_yes_no(question, default="yes"):
