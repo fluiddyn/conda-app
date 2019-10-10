@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 import json
 import argparse
+import platform
 
 from conda.cli.python_api import run_command
 
@@ -13,6 +14,12 @@ if os.name == "nt":
     data_dir = "AppData"
 else:
     data_dir = ".local/share"
+    if platform.system() == "Darwin":
+        bash_config = Path.home() / ".bash_profile"
+    else:
+        bash_config = Path.home() / ".bashrc"
+    if not bash_config.exists():
+        bash_config.touch()
 
 data_dir = Path.home() / data_dir
 data_dir.mkdir(exist_ok=True, parents=True)
@@ -147,7 +154,7 @@ def install_app(app_name):
 
     export_path_posix = f"export PATH={path_bin}:$PATH\n"
     # bash
-    modif_config_file(Path.home() / ".bashrc", export_path_posix)
+    modif_config_file(bash_config, export_path_posix)
 
     # zsh
     modif_config_file(Path.home() / ".zshrc", export_path_posix)
