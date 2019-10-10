@@ -187,7 +187,7 @@ def install_app(app_name):
         print("done")
 
         if app_name == "mercurial":
-            print("Install hg-git with pip... ", end="")
+            print("Install hg-git with pip... ", end="", flush=True)
             run_command(
                 "run",
                 "-n",
@@ -195,6 +195,7 @@ def install_app(app_name):
                 "pip",
                 "install",
                 "hg+https://bitbucket.org/durin42/hg-git",
+                "--no-cache-dir",
             )
             print("done")
 
@@ -277,7 +278,7 @@ def uninstall_app(app_name):
 
         path_root = conda_data["root_prefix"]
         env_path = Path(path_root) / "envs" / env_name
-        shutil.rmtree(env_path)
+        shutil.rmtree(env_path, ignore_errors=True)
         print(f"Directory {env_path} removed")
 
 
