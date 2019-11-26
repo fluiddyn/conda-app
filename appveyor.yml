@@ -1,0 +1,22 @@
+language: python
+python:
+  - "3.7"
+
+install:
+  - wget https://repo.anaconda.com/pkgs/misc/conda-execs/conda-latest-linux-64.exe -O conda.exe
+  - chmod +x conda.exe
+  - export CONDA_ALWAYS_YES=1
+  - conda.exe update -q conda
+  # This is where you put any extra dependencies you may have.
+  - ./conda.exe install python=$TRAVIS_PYTHON_VERSION
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda.exe info -a
+  - conda.exe activate base
+  # Install your code here.
+  - python.exe -m pip install .
+  - conda.exe config --add channels conda-forge
+
+script:
+  - conda-app install mercurial
+  - hg --version
