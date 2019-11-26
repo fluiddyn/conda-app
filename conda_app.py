@@ -4,6 +4,7 @@ from pathlib import Path
 import json
 import argparse
 import platform
+import traceback
 
 from conda.cli.python_api import run_command
 
@@ -14,12 +15,13 @@ if os.name == "nt":
     data_dir = "AppData"
 else:
     data_dir = ".local/share"
-    if platform.system() == "Darwin":
-        bash_config = Path.home() / ".bash_profile"
-    else:
-        bash_config = Path.home() / ".bashrc"
-    if not bash_config.exists():
-        bash_config.touch()
+
+if platform.system() == "Darwin":
+    bash_config = Path.home() / ".bash_profile"
+else:
+    bash_config = Path.home() / ".bashrc"
+if not bash_config.exists():
+    bash_config.touch()
 
 data_dir = Path.home() / data_dir
 data_dir.mkdir(exist_ok=True, parents=True)
@@ -118,6 +120,7 @@ def get_env_names(conda_data):
 def install_app(app_name):
 
     package_name = app_name + "-app"
+    print(f"Checking if package {package_name} exists...")
 
     try:
         result = run_command("search", package_name, "--json")
@@ -130,13 +133,20 @@ def install_app(app_name):
             sys.exit(1)
 
         package_name = app_name
-        result = run_command("search", package_name, "--json")
-    # else:
-    #     data = json.loads(result[0])
-    #     print(data[package_name][-1])
+        try:
+            result = run_command("search", package_name, "--json")
+        except Exception:
+            print(
+                "An exception occurred during the conda search. "
+                "It maybe that the package does not exist"
+            )
+            sys.exit(1)
 
+    print(f"Package {package_name} exits!")
+
+    print("Running conda info... ", end="", flush=True)
     conda_data = get_conda_data()
-    # print(conda_data)
+    print("done")
     path_root = conda_data["root_prefix"]
 
     if conda_data["root_writable"]:
@@ -149,7 +159,14 @@ def install_app(app_name):
         if not os.name == "nt":
             path_bin = Path.home() / ".local/bin/conda-app"
         else:
-            raise NotImplementedError
+            print(
+                "conda-app cannot be used on Windows when "
+                "conda root is not writable. "
+                "You can retry with miniconda installed "
+                "only for you (not globally)."
+            )
+            sys.exit(1)
+
     path_bin.mkdir(exist_ok=True, parents=True)
 
     export_path_posix = f"export PATH={path_bin}:$PATH\n"
@@ -171,8 +188,10 @@ def install_app(app_name):
 
     if env_name not in env_names:
         print(
-            f"Create conda environment {env_name} with package {package_name}... ",
+            f"Create conda environment {env_name} "
+            f"with package {package_name}... ",
             end="",
+            flush=True,
         )
 
         result = run_command("create", "-n", env_name, package_name, "--json")
@@ -194,7 +213,7 @@ def install_app(app_name):
                 env_name,
                 "pip",
                 "install",
-                "hg+https://bitbucket.org/durin42/hg-git",
+                "hg-git",
                 "--no-cache-dir",
             )
             print("done")
@@ -305,6 +324,7 @@ def main():
         type=str,
         help=(
             "R|Can be in:\n- install: install an application\n"
+            "- uninstall: uninstall an application\n"
             "- list: list applications installed with conda-app\n"
         ),
     )
