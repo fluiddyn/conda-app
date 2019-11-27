@@ -4,12 +4,33 @@ from pathlib import Path
 import json
 import argparse
 import platform
-import traceback
 
 from conda.cli.python_api import run_command
 
 commands_app = {"mercurial": ["hg"], "tortoisehg": ["hg", "thg"]}
 apps_with_app = ["mercurial"]
+
+default_hgrc = """
+[ui]
+# username=myusername <email@adress.org>
+# editor=nano
+tweakdefaults = True
+
+[extensions]
+# hgext.extdiff =
+# only to use Mercurial with GitHub and Gitlab
+hggit =
+# more advanced extensions
+churn =
+shelve =
+rebase =
+absorb =
+evolve =
+topic =
+
+# [extdiff]
+# cmd.meld =
+"""
 
 if os.name == "nt":
     data_dir = "AppData"
@@ -217,6 +238,15 @@ def install_app(app_name):
                 "--no-cache-dir",
             )
             print("done")
+
+            path_home_hgrc = Path.home() / ".hgrc"
+            if not path_home_hgrc.exists():
+                print(
+                    "Filling ~/.hgrc with reasonable default "
+                    "(edit to fill correct username and email address!)"
+                )
+                with open(path_home_hgrc, "w") as file:
+                    file.write(default_hgrc)
 
         try:
             commands = commands_app[app_name]
