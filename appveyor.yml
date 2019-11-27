@@ -1,22 +1,40 @@
-language: python
-python:
-  - "3.7"
+
+# Build only the master branch, tagged commits, and pull requests
+branches:
+  only:
+    - master
+
+# Don't run the (redundant) branch build with a pull request
+skip_branch_with_pr: true
+
+matrix:
+  fast_finish: true
+
+environment:
+  PYTHONUNBUFFERED: 1
+  COVERAGE_DIR: ""
+  MINICONDA: C:\\Miniconda3-x64
+  matrix:
+    - PYTHON_VERSION: 3.7
 
 install:
-  - wget https://repo.anaconda.com/pkgs/misc/conda-execs/conda-latest-linux-64.exe -O conda.exe
-  - chmod +x conda.exe
-  - export CONDA_ALWAYS_YES=1
-  - conda.exe update -q conda
-  # This is where you put any extra dependencies you may have.
-  - ./conda.exe install python=$TRAVIS_PYTHON_VERSION
-  - export PATH="$HOME/miniconda/bin:$PATH"
-  - hash -r
-  - conda.exe info -a
-  - conda.exe activate base
-  # Install your code here.
-  - python.exe -m pip install .
-  - conda.exe config --add channels conda-forge
+  - call %MINICONDA%\Scripts\activate.bat
+  # The safety checks are simply intended to ensure that there is enough disk space
+  # and the user has the necessary permissions to make environment changes. In a CI
+  # environment these are not necessary and slow things down noticeably on Windows.
+  - conda config --set always_yes yes --set changeps1 no --set auto_update_conda no --set safety_checks disabled
+  - conda install -q conda
+  - conda info -a
+  - conda activate base
+  - pip install .
+  - conda config --add channels conda-forge
 
-script:
+# Not a .NET project, we build in the install step instead
+build: false
+
+test_script:
   - conda-app install mercurial
   - hg --version
+  - cd %HOME%
+  - hg clone https://github.com/paugier/conda-app.git
+  - dir conda-app
