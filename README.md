@@ -20,7 +20,8 @@ The main advantages are:
 ## Installation of conda-app
 
 conda-app needs to be installed in the `base` conda environment:
-```
+
+```bash
 conda activate base
 pip install conda-app
 ```
@@ -39,13 +40,13 @@ install python=3`.
 With the conda-forge channel added (`conda config --add channels conda-forge`),
 one should be able to install Mercurial (plus few important extensions) with:
 
-```
+```bash
 conda-app install mercurial
 ```
 
 This should also work:
 
-```
+```bash
 conda-app list
 conda-app uninstall mercurial
 ```

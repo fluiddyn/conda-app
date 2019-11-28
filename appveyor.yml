@@ -34,7 +34,7 @@ build: false
 
 test_script:
   - conda-app install mercurial
-  - hg --version
+  - hg version -v
   - cd %HOME%
   - hg clone https://github.com/paugier/conda-app.git
   - dir conda-app

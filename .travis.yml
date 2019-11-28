@@ -36,7 +36,7 @@ script:
     fi
   - echo $PATH
   - which hg
-  - hg --version
+  - hg version -v
   - cd $HOME
   - hg clone https://github.com/paugier/conda-app.git
   - ls conda-app
