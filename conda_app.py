@@ -219,10 +219,21 @@ def install_app(app_name):
         try:
             data_create = json.loads(result[0])
         except json.decoder.JSONDecodeError:
-            print("warning: json.decoder.JSONDecodeError")
-            # print(result[0])
+            print(
+                "\nwarning: json.decoder.JSONDecodeError "
+                "(`conda create --json` produces text that can't be load as json!)"
+            )
+            prefix = None
+            for line in result[0].split("\n"):
+                if '"prefix":' in line:
+                    prefix = line.split('"prefix": "')[1].split('"')[0]
+                    break
+            if prefix is None:
+                raise
         else:
-            env_path = Path(data_create["prefix"])
+            prefix = data_create["prefix"]
+
+        env_path = Path(prefix)
 
         print("done")
 
