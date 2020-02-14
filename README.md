@@ -1,8 +1,6 @@
-.. warning ::
-
-   Our repositories in Bitbucket.org will soon be deleted! Our new home:
-   https://foss.heptapod.net/fluiddyn/conda-app (`more details
-   <https://fluiddyn.readthedocs.io/en/latest/advice_developers.html>`_).
+**Warning:** Our repositories in Bitbucket.org will soon be deleted! Our new
+home: https://foss.heptapod.net/fluiddyn/conda-app ([more
+details](https://fluiddyn.readthedocs.io/en/latest/advice_developers.html)).
 
 [![release](https://img.shields.io/pypi/v/conda-app.svg)](https://pypi.python.org/pypi/conda-app/)
 [![Build Status](https://travis-ci.org/paugier/conda-app.svg?branch=master)](https://travis-ci.org/paugier/conda-app)
