@@ -27,7 +27,6 @@ install:
   - conda info -a
   - conda activate base
   - pip install .
-  - conda config --add channels conda-forge
 
 # Not a .NET project, we build in the install step instead
 build: false
@@ -36,5 +35,5 @@ test_script:
   - conda-app install mercurial
   - hg version -v
   - cd %HOME%
-  - hg clone https://github.com/paugier/conda-app.git
+  - hg clone https://github.com/fluiddyn/conda-app.git
   - dir conda-app
