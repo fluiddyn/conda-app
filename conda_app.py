@@ -141,18 +141,17 @@ def get_env_names(conda_data):
 def install_app(app_name):
 
     package_name = app_name + "-app"
+
+    channels, _, _ = run_command("config", "--show", "channels", "--json")
+    if "conda-forge" not in channels:
+        run_command("config", "--add", "channels", "conda-forge")
+        print("Warning: conda-forge channel added!")
+
     print(f"Checking if package {package_name} exists...")
 
     try:
         result = run_command("search", package_name, "--json")
     except Exception:
-        if app_name in apps_with_app:
-            print(
-                "Please first add the conda-forge channel with:\n"
-                "conda config --add channels conda-forge"
-            )
-            sys.exit(1)
-
         package_name = app_name
         try:
             result = run_command("search", package_name, "--json")
@@ -163,7 +162,7 @@ def install_app(app_name):
             )
             sys.exit(1)
 
-    print(f"Package {package_name} exits!")
+    print(f"Package {package_name} found!")
 
     print("Running conda info... ", end="", flush=True)
     conda_data = get_conda_data()
@@ -181,7 +180,7 @@ def install_app(app_name):
             path_bin = Path.home() / ".local/bin/conda-app"
         else:
             print(
-                "conda-app cannot be used on Windows when "
+                "\nError: conda-app cannot be used on Windows when "
                 "conda root is not writable. "
                 "You can retry with miniconda installed "
                 "only for you (not globally)."
@@ -221,7 +220,7 @@ def install_app(app_name):
         except json.decoder.JSONDecodeError:
             print(
                 "\nwarning: json.decoder.JSONDecodeError "
-                "(`conda create --json` produces text that can't be load as json!)"
+                "(`conda create --json` produces text that can't be loaded as json!)"
             )
             prefix = None
             for line in result[0].split("\n"):
@@ -238,18 +237,6 @@ def install_app(app_name):
         print("done")
 
         if app_name == "mercurial":
-            print("Install hg-git with pip... ", end="", flush=True)
-            run_command(
-                "run",
-                "-n",
-                env_name,
-                "pip",
-                "install",
-                "hg-git",
-                "--no-cache-dir",
-            )
-            print("done")
-
             path_home_hgrc = Path.home() / ".hgrc"
             if not path_home_hgrc.exists():
                 print(
