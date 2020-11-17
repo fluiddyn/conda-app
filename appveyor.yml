@@ -1,9 +1,4 @@
 
-# Build only the master branch, tagged commits, and pull requests
-branches:
-  only:
-    - master
-
 # Don't run the (redundant) branch build with a pull request
 skip_branch_with_pr: true
 
