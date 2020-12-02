@@ -8,16 +8,19 @@ import platform
 from conda.cli.python_api import run_command
 
 commands_app = {"mercurial": ["hg"], "tortoisehg": ["hg", "thg"]}
-apps_with_app = ["mercurial"]
+known_apps_with_app_package = ["mercurial"]
 
 default_hgrc = """
+# File created by conda-app when installing Mercurial
+# - change your usename and email address
+# - delete the character # to activate some lines
 [ui]
-# username=myusername <email@adress.org>
-# editor=nano
+#username=myusername <email@adress.org>
+#editor=nano
 tweakdefaults = True
 
 [extensions]
-# hgext.extdiff =
+#hgext.extdiff =
 # only to use Mercurial with GitHub and Gitlab
 hggit =
 # more advanced extensions
@@ -28,8 +31,8 @@ absorb =
 evolve =
 topic =
 
-# [extdiff]
-# cmd.meld =
+#[extdiff]
+#cmd.meld =
 """
 
 if os.name == "nt":
@@ -147,22 +150,22 @@ def install_app(app_name):
         run_command("config", "--add", "channels", "conda-forge")
         print("Warning: conda-forge channel added!")
 
-    print(f"Checking if package {package_name} exists...")
-
-    try:
-        result = run_command("search", package_name, "--json")
-    except Exception:
-        package_name = app_name
+    if app_name not in known_apps_with_app_package:
+        print(f"Checking if package {package_name} exists...")
         try:
             result = run_command("search", package_name, "--json")
         except Exception:
-            print(
-                "An exception occurred during the conda search. "
-                "It maybe that the package does not exist"
-            )
-            sys.exit(1)
+            package_name = app_name
+            try:
+                result = run_command("search", package_name, "--json")
+            except Exception:
+                print(
+                    "An exception occurred during the conda search. "
+                    "It maybe that the package does not exist"
+                )
+                sys.exit(1)
 
-    print(f"Package {package_name} found!")
+        print(f"Package {package_name} found!")
 
     print("Running conda info... ", end="", flush=True)
     conda_data = get_conda_data()
