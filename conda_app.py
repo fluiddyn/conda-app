@@ -8,12 +8,13 @@ import platform
 from conda.cli.python_api import run_command
 
 commands_app = {"mercurial": ["hg"], "tortoisehg": ["hg", "thg"]}
-known_apps_with_app_package = ["mercurial"]
+known_apps_with_app_package = ["mercurial", "spyder"]
 
 default_hgrc = """
 # File created by conda-app when installing Mercurial
-# - change your usename and email address
+# - change your username and email address
 # - delete the character # to activate some lines
+#   (in particular the lines starting by username and editor)
 [ui]
 #username=myusername <email@adress.org>
 #editor=nano
@@ -211,8 +212,8 @@ def install_app(app_name):
 
     if env_name not in env_names:
         print(
-            f"Create conda environment {env_name} "
-            f"with package {package_name}... ",
+            f"Creating conda environment {env_name} "
+            f"with package {package_name}... (it can be long...) ",
             end="",
             flush=True,
         )
