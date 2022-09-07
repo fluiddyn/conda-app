@@ -1,5 +1,7 @@
 [![release](https://img.shields.io/pypi/v/conda-app.svg)](https://pypi.python.org/pypi/conda-app/)
 
+[![default branch Github Actions](https://github.com/fluiddyn/conda-app/actions/workflows/ci.yml/badge.svg?branch=branch/default)](https://github.com/fluiddyn/conda-app/actions)
+
 [![Build Status](https://ci.appveyor.com/api/projects/status/github/fluiddyn/conda-app?svg=true)](https://ci.appveyor.com/project/fluiddyn/conda-app)
 
 # Install applications using conda

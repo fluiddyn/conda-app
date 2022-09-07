@@ -8,7 +8,8 @@ import platform
 from conda.cli.python_api import run_command
 
 commands_app = {"mercurial": ["hg"], "tortoisehg": ["hg", "thg"]}
-known_apps_with_app_package = ["mercurial", "spyder"]
+known_apps_with_app_package = ["mercurial"]
+known_apps_without_app_package = ["spyder"]
 
 default_hgrc = """
 # File created by conda-app when installing Mercurial
@@ -151,7 +152,9 @@ def install_app(app_name):
         run_command("config", "--add", "channels", "conda-forge")
         print("Warning: conda-forge channel added!")
 
-    if app_name not in known_apps_with_app_package:
+    if app_name in known_apps_without_app_package:
+        package_name = app_name
+    elif app_name not in known_apps_with_app_package:
         print(f"Checking if package {package_name} exists...")
         try:
             result = run_command("search", package_name, "--json")
