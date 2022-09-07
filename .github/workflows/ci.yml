@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  tests:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v2
+
+      - name: create environment with mamba
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          mamba-version: "*"
+          channels: conda-forge,defaults
+          auto-activate-base: true
+
+      - name: check solution
+        run: |
+          mamba env export
+
+      - name: test install conda-app
+        run: |
+          conda activate base
+          which python
+          python -m pip install -e .
+          which conda-app
+
+      - name: test install mercurial
+        run: |
+          conda activate base
+          conda-app install mercurial
+          conda env list
+
+      - name: test installed mercurial
+        run: |
+          if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+            . $HOME/.bash_profile;
+          else
+            . $HOME/.bashrc;
+          fi
+          hg version -v
+          mkdir -p $HOME/tmp
+          cd $HOME/tmp
+          hg clone https://github.com/fluiddyn/conda-app.git
+          cd conda-app
