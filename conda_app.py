@@ -32,22 +32,11 @@ if not is_conda_avail and not is_mamba_avail:
 def run_conda(*args, conda_command="conda", capture_output=True):
     cmd = [conda_command]
     cmd.extend(args)
-
-    if capture_output:
-        completed_process = subprocess.run(
-            cmd, capture_output=capture_output, text=True
-        )
-        completed_process.check_returncode()
-        return completed_process.stdout
-    else:
-        lines = []
-        with subprocess.Popen(
-            cmd, stdout=subprocess.PIPE, bufsize=1, text=True
-        ) as process:
-            for line in iter(process.stdout.readline, ""):
-                print(line, end="")
-                lines.append(line)
-        return "\n".join(lines)
+    completed_process = subprocess.run(
+        cmd, capture_output=capture_output, text=True
+    )
+    completed_process.check_returncode()
+    return completed_process.stdout
 
 
 commands_app = {"mercurial": ["hg"], "tortoisehg": ["hg", "thg"]}
@@ -268,7 +257,7 @@ def install_app(app_name):
         else:
             conda_command = "conda"
 
-        result = run_conda(
+        run_conda(
             "create",
             "-n",
             env_name,
@@ -278,12 +267,10 @@ def install_app(app_name):
             capture_output=False,
         )
 
+        result = run_conda("env", "list")
         for line in result.split("\n"):
-            if "Prefix: " in line:
+            if env_name in line:
                 prefix = line.split()[1]
-                break
-            if "environment location: " in line:
-                prefix = line.split()[2]
                 break
 
         env_path = Path(prefix)
