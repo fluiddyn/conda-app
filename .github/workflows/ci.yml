@@ -34,14 +34,12 @@ jobs:
 
       - name: test install conda-app
         run: |
-          conda activate base
           which python
           python -m pip install -e .
           which conda-app
 
       - name: test install mercurial
         run: |
-          conda activate base
           conda-app install mercurial
           conda env list
 

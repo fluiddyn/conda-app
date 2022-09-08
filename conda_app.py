@@ -5,7 +5,36 @@ import json
 import argparse
 import platform
 
-from conda.cli.python_api import run_command
+import subprocess
+
+
+def check_command(conda_command):
+    completed_process = subprocess.run(
+        [conda_command, "install", "-h"], capture_output=True
+    )
+    if completed_process.returncode == 0:
+        return True
+
+
+is_conda_avail = check_command("conda")
+is_mamba_avail = check_command("mamba")
+
+
+if not is_conda_avail and not is_mamba_avail:
+    raise RuntimeError("No conda or mamba executable available")
+
+# from conda.cli.python_api import run_command
+
+
+def run_command(*args, conda_command="conda", capture_output=True):
+    full_args = [conda_command]
+    full_args.extend(args)
+    completed_process = subprocess.run(
+        full_args, capture_output=capture_output, text=True
+    )
+    completed_process.check_returncode()
+    return completed_process.stdout
+
 
 commands_app = {"mercurial": ["hg"], "tortoisehg": ["hg", "thg"]}
 known_apps_with_app_package = ["mercurial"]
