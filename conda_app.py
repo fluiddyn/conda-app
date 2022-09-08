@@ -282,6 +282,9 @@ def install_app(app_name):
             if "Prefix: " in line:
                 prefix = line.split()[1]
                 break
+            if "environment location: " in line:
+                prefix = line.split()[2]
+                break
 
         env_path = Path(prefix)
 
