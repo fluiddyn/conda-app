@@ -23,8 +23,6 @@ is_mamba_avail = check_command("mamba")
 if not is_conda_avail and not is_mamba_avail:
     raise RuntimeError("No conda or mamba executable available")
 
-# from conda.cli.python_api import run_command
-
 
 def run_command(*args, conda_command="conda", capture_output=True):
     full_args = [conda_command]
@@ -176,7 +174,7 @@ def install_app(app_name):
 
     package_name = app_name + "-app"
 
-    channels, _, _ = run_command("config", "--show", "channels", "--json")
+    channels = run_command("config", "--show", "channels", "--json")
     if "conda-forge" not in channels:
         run_command("config", "--add", "channels", "conda-forge")
         print("Warning: conda-forge channel added!")
