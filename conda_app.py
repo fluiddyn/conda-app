@@ -24,14 +24,25 @@ if not is_conda_avail and not is_mamba_avail:
     raise RuntimeError("No conda or mamba executable available")
 
 
-def run_command(*args, conda_command="conda", capture_output=True):
-    full_args = [conda_command]
-    full_args.extend(args)
-    completed_process = subprocess.run(
-        full_args, capture_output=capture_output, text=True
-    )
-    completed_process.check_returncode()
-    return completed_process.stdout
+def run_conda(*args, conda_command="conda", capture_output=True):
+    cmd = [conda_command]
+    cmd.extend(args)
+
+    if capture_output:
+        completed_process = subprocess.run(
+            cmd, capture_output=capture_output, text=True
+        )
+        completed_process.check_returncode()
+        return completed_process.stdout
+    else:
+        lines = []
+        with subprocess.Popen(
+            cmd, stdout=subprocess.PIPE, bufsize=1, text=True
+        ) as process:
+            for line in iter(process.stdout.readline, ""):
+                print(line, end="")
+                lines.append(line)
+        return "\n".join(lines)
 
 
 commands_app = {"mercurial": ["hg"], "tortoisehg": ["hg", "thg"]}
@@ -152,8 +163,8 @@ def modif_config_file(path_config, line_config):
 
 
 def get_conda_data():
-    result = run_command("info", "--json")
-    return json.loads(result[0])
+    result = run_conda("info", "--json")
+    return json.loads(result)
 
 
 def get_env_names(conda_data):
@@ -174,9 +185,9 @@ def install_app(app_name):
 
     package_name = app_name + "-app"
 
-    channels = run_command("config", "--show", "channels", "--json")
+    channels = run_conda("config", "--show", "channels", "--json")
     if "conda-forge" not in channels:
-        run_command("config", "--add", "channels", "conda-forge")
+        run_conda("config", "--add", "channels", "conda-forge")
         print("Warning: conda-forge channel added!")
 
     if app_name in known_apps_without_app_package:
@@ -184,11 +195,11 @@ def install_app(app_name):
     elif app_name not in known_apps_with_app_package:
         print(f"Checking if package {package_name} exists...")
         try:
-            result = run_command("search", package_name, "--json")
+            result = run_conda("search", package_name, "--json")
         except Exception:
             package_name = app_name
             try:
-                result = run_command("search", package_name, "--json")
+                result = run_conda("search", package_name, "--json")
             except Exception:
                 print(
                     "An exception occurred during the conda search. "
@@ -243,32 +254,31 @@ def install_app(app_name):
     if env_name not in env_names:
         print(
             f"Creating conda environment {env_name} "
-            f"with package {package_name}... (it can be long...) ",
-            end="",
+            f"with package {package_name}... (it can be long...)",
             flush=True,
         )
 
-        result = run_command("create", "-n", env_name, package_name, "--json")
-        try:
-            data_create = json.loads(result[0])
-        except json.decoder.JSONDecodeError:
-            print(
-                "\nwarning: json.decoder.JSONDecodeError "
-                "(`conda create --json` produces text that can't be loaded as json!)"
-            )
-            prefix = None
-            for line in result[0].split("\n"):
-                if '"prefix":' in line:
-                    prefix = line.split('"prefix": "')[1].split('"')[0]
-                    break
-            if prefix is None:
-                raise
+        if is_mamba_avail:
+            conda_command = "mamba"
         else:
-            prefix = data_create["prefix"]
+            conda_command = "conda"
+
+        result = run_conda(
+            "create",
+            "-n",
+            env_name,
+            package_name,
+            "-y",
+            conda_command=conda_command,
+            capture_output=False,
+        )
+
+        for line in result.split("\n"):
+            if "Prefix: " in line:
+                prefix = line.split()[1]
+                break
 
         env_path = Path(prefix)
-
-        print("done")
 
         if app_name == "mercurial":
             path_home_hgrc = Path.home() / ".hgrc"
