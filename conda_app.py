@@ -9,11 +9,16 @@ import subprocess
 
 
 def check_command(conda_command):
-    completed_process = subprocess.run(
-        [conda_command, "install", "-h"], capture_output=True
-    )
-    if completed_process.returncode == 0:
-        return True
+
+    try:
+        completed_process = subprocess.run(
+            [conda_command, "install", "-h"], capture_output=True
+        )
+    except FileNotFoundError:
+        return False
+    else:
+        if completed_process.returncode == 0:
+            return True
 
 
 is_conda_avail = check_command("conda")
