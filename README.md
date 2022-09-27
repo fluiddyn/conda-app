@@ -1,18 +1,10 @@
-|release| |GithubActions| |Appveyor|
+# Conda-app
 
-.. |release| image:: https://img.shields.io/pypi/v/conda-app.svg
-   :target: https://pypi.python.org/pypi/conda-app/
-   :alt: Latest version
+[![PyPI][pypi-badge]][pypi-link]
+[![Github Actions][GH-badge]][GH-link]
+[![Appveyor][Appveyor-badge]][Appveyor-link]
 
-.. |GithubActions| image:: https://github.com/fluiddyn/conda-app/actions/workflows/ci.yml/badge.svg?branch=branch/default
-   :target: https://github.com/fluiddyn/conda-app/actions
-   :alt: Github Actions
-
-.. |Appveyor| image:: https://ci.appveyor.com/api/projects/status/github/fluiddyn/conda-app?svg=true
-   :target: https://ci.appveyor.com/project/fluiddyn/conda-app
-   :alt: Appveyor
-
-# Install isolated applications using conda
+## Install isolated applications using conda
 
 conda-app is a tiny `conda` extension (actually a commandline tool using
 `conda` or `mamba`) to install applications is isolated environments. Like
@@ -31,13 +23,13 @@ The main advantages are:
 - Installation from the `conda-forge` channel so there is no need for
 compilation.
 
-## Installation of conda-app
+### Installation of conda-app
 
 ```bash
 pip install conda-app
 ```
 
-## Example of Mercurial
+### Example of Mercurial
 
 Mercurial and common extensions (`hg-git` and `hg-evolve`) can be installed with:
 
@@ -46,7 +38,7 @@ conda-app install mercurial
 ```
 
 Then, in **a new terminal** (on Windows, the "Conda Prompt"), the Mercurial
-command `hg` should be available.
+command `hg` should be available so one can try `hg version -v`.
 
 This should also work:
 
@@ -58,3 +50,10 @@ Installed applications:
 $ conda-app uninstall pandoc
 ...
 ```
+
+[pypi-badge]: https://img.shields.io/pypi/v/conda-app.svg
+[pypi-link]: https://pypi.python.org/pypi/conda-app/
+[GH-badge]: https://github.com/fluiddyn/conda-app/actions/workflows/ci.yml/badge.svg?branch=branch/default
+[GH-link]: https://github.com/fluiddyn/conda-app/actions
+[Appveyor-badge]: https://ci.appveyor.com/api/projects/status/github/fluiddyn/conda-app?svg=true
+[Appveyor-link]: https://ci.appveyor.com/project/fluiddyn/conda-app
