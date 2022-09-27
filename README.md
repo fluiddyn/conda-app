@@ -1,13 +1,22 @@
-[![release](https://img.shields.io/pypi/v/conda-app.svg)](https://pypi.python.org/pypi/conda-app/)
+|release| |GithubActions| |Appveyor|
 
-[![default branch Github Actions](https://github.com/fluiddyn/conda-app/actions/workflows/ci.yml/badge.svg?branch=branch/default)](https://github.com/fluiddyn/conda-app/actions)
+.. |release| image:: https://img.shields.io/pypi/v/conda-app.svg
+   :target: https://pypi.python.org/pypi/conda-app/
+   :alt: Latest version
 
-[![Build Status](https://ci.appveyor.com/api/projects/status/github/fluiddyn/conda-app?svg=true)](https://ci.appveyor.com/project/fluiddyn/conda-app)
+.. |GithubActions| image:: https://github.com/fluiddyn/conda-app/actions/workflows/ci.yml/badge.svg?branch=branch/default
+   :target: https://github.com/fluiddyn/conda-app/actions
+   :alt: Github Actions
 
-# Install applications using conda
+.. |Appveyor| image:: https://ci.appveyor.com/api/projects/status/github/fluiddyn/conda-app?svg=true
+   :target: https://ci.appveyor.com/project/fluiddyn/conda-app
+   :alt: Appveyor
 
-Tiny conda extension (actually a commandline tool using conda) to install
-applications.
+# Install isolated applications using conda
+
+conda-app is a tiny `conda` extension (actually a commandline tool using
+`conda` or `mamba`) to install applications is isolated environments. Like
+[pipx](https://github.com/pypa/pipx) but with conda environments.
 
 The main advantages are:
 
@@ -16,42 +25,36 @@ The main advantages are:
 
 - the applications are installed in isolated conda environments.
 
-- commands provided by the applications are available system-wide, i.e. when
-  the associated conda environment is not activated.
+- commands provided by the applications are available system-wide, i.e. even
+  when the associated conda environment is not activated.
+
+- Installation from the `conda-forge` channel so there is no need for
+compilation.
 
 ## Installation of conda-app
 
-conda-app needs to be installed in the `base` conda environment:
-
 ```bash
-conda activate base
 pip install conda-app
 ```
 
------------
-**Warning**
+## Example of Mercurial
 
-Note that conda-app needs Python >= 3.6, so if your base environment still uses
-Python 2.7, you first need to update it with `conda update conda` and `conda
-install python=3`.
-
------------
-
-## Example
-
-With the conda-forge channel added (`conda config --add channels conda-forge`),
-one should be able to install Mercurial (plus few important extensions) with:
+Mercurial and common extensions (`hg-git` and `hg-evolve`) can be installed with:
 
 ```bash
 conda-app install mercurial
 ```
 
+Then, in **a new terminal** (on Windows, the "Conda Prompt"), the Mercurial
+command `hg` should be available.
+
 This should also work:
 
-```bash
-conda-app list
-conda-app uninstall mercurial
-```
+```raw
+$ conda-app list
+Installed applications:
+ ['mercurial', 'spyder', 'pandoc']
 
-**Open a new terminal** (on Windows, the "Conda Prompt") and the Mercurial
-command `hg` should be available.
+$ conda-app uninstall pandoc
+...
+```
