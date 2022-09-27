@@ -6,8 +6,8 @@
 
 ## Install isolated applications using conda
 
-conda-app is a tiny `conda` extension (actually a commandline tool using
-`conda` or `mamba`) to install applications is isolated environments. Like
+`conda-app` is a tiny `conda` extension (actually a commandline tool using
+`conda` or `mamba`) to install applications in isolated environments. Like
 [pipx](https://github.com/pypa/pipx) but with conda environments.
 
 The main advantages are:
@@ -15,13 +15,13 @@ The main advantages are:
 - very simple **cross-platform** installation commands for Windows, macOS and
   Linux (and different shells, as bash, fish and zsh).
 
-- the applications are installed in isolated conda environments.
+- the applications are installed in **isolated** environments.
 
-- commands provided by the applications are available system-wide, i.e. even
+- commands provided by the applications are **available system-wide**, i.e. even
   when the associated conda environment is not activated.
 
-- Installation from the `conda-forge` channel so there is no need for
-compilation.
+- Installation from the `conda-forge` channel so there is **no need for
+compilation**.
 
 ### Installation of conda-app
 

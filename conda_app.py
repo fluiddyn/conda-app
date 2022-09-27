@@ -43,7 +43,11 @@ commands_app = {"mercurial": ["hg"], "tortoisehg": ["hg", "thg"]}
 known_apps_with_app_package = ["mercurial"]
 known_apps_without_app_package = ["spyder"]
 
-default_hgrc = """
+special_hgrc_windows = ""
+if os.name == "nt":
+    special_hgrc_windows = "# avoid a bug on Windows if no pager is avail\npaginate = never\n"
+
+default_hgrc = f"""
 # File created by conda-app when installing Mercurial
 # - change your username and email address
 # - delete the character # to activate some lines
@@ -52,7 +56,7 @@ default_hgrc = """
 #username=myusername <email@adress.org>
 #editor=nano
 tweakdefaults = True
-
+{special_hgrc_windows}
 [extensions]
 #hgext.extdiff =
 # only to use Mercurial with GitHub and Gitlab
@@ -132,8 +136,10 @@ def query_yes_no(question, default="yes"):
             )
 
 
-def modif_config_file(path_config, line_config):
+def modif_config_file(path_config, line_config, force=False):
     path_config = Path(path_config)
+    if force and not path_config.exists():
+        path_config.touch()
     if not line_config.endswith("\n"):
         line_config = line_config + "\n"
     if path_config.exists():
@@ -233,7 +239,10 @@ def install_app(app_name):
     modif_config_file(bash_config, export_path_posix)
 
     # zsh
-    modif_config_file(Path.home() / ".zshrc", export_path_posix)
+    force_zshrc = platform.system() == "Darwin"
+    modif_config_file(
+        Path.home() / ".zshrc", export_path_posix, force=force_zshrc
+    )
 
     # fish
     modif_config_file(
