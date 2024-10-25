@@ -1,0 +1,32 @@
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[project]
+name = "conda-app"
+version = "0.3.2"
+description = "Install applications with conda"
+authors = [
+    {name = "Pierre Augier"},
+]
+requires-python = ">= 3.10"
+readme = "README.md"
+license = {text = "BSD"}
+keywords = ["conda", "packaging"]
+classifiers = [
+    "License :: OSI Approved :: BSD License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+
+[project.urls]
+Homepage = "https://foss.heptapod.net/fluiddyn/conda-app/"
+
+[project.scripts]
+conda-app = "conda_app:main"
+
+[tool.pdm]
+distribution = true

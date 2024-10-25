@@ -16,3 +16,6 @@ dist*
 .mypy_cache
 
 *.egg-info/*
+
+.pdm-build
+.pdm-python
