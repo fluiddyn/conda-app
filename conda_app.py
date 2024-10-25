@@ -280,8 +280,12 @@ def install_app(app_name):
         result = run_conda("env", "list")
         for line in result.split("\n"):
             if env_name in line:
-                prefix = line.split()[1]
-                break
+                try:
+                    prefix = line.split()[1]
+                except IndexError:
+                    pass
+                else:
+                    break
 
         env_path = Path(prefix)
 
