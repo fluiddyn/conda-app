@@ -57,6 +57,11 @@ default_hgrc = f"""
 #editor=nano
 tweakdefaults = True
 {special_hgrc_windows}
+
+[alias]
+lg = log -G
+up = up -v
+
 [extensions]
 #hgext.extdiff =
 # only to use Mercurial with GitHub and Gitlab
