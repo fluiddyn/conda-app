@@ -32,9 +32,7 @@ if not is_conda_avail and not is_mamba_avail:
 def run_conda(*args, conda_command="conda", capture_output=True):
     cmd = [conda_command]
     cmd.extend(args)
-    completed_process = subprocess.run(
-        cmd, capture_output=capture_output, text=True
-    )
+    completed_process = subprocess.run(cmd, capture_output=capture_output, text=True)
     completed_process.check_returncode()
     return completed_process.stdout
 
@@ -45,7 +43,9 @@ known_apps_without_app_package = ["spyder"]
 
 special_hgrc_windows = ""
 if os.name == "nt":
-    special_hgrc_windows = "# avoid a bug on Windows if no pager is avail\npaginate = never\n"
+    special_hgrc_windows = (
+        "# avoid a bug on Windows if no pager is avail\npaginate = never\n"
+    )
 
 default_hgrc = f"""
 # File created by conda-app when installing Mercurial
@@ -153,9 +153,7 @@ def modif_config_file(path_config, line_config, force=False):
                 f"at the end of file {path_config}"
             )
 
-            with open(
-                path_config.with_name(path_config.name + ".orig"), "w"
-            ) as file:
+            with open(path_config.with_name(path_config.name + ".orig"), "w") as file:
                 file.write("".join(lines))
 
             with open(path_config, "a") as file:
@@ -240,9 +238,7 @@ def install_app(app_name):
 
     # zsh
     force_zshrc = platform.system() == "Darwin"
-    modif_config_file(
-        Path.home() / ".zshrc", export_path_posix, force=force_zshrc
-    )
+    modif_config_file(Path.home() / ".zshrc", export_path_posix, force=force_zshrc)
 
     # fish
     modif_config_file(
