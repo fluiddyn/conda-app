@@ -1,4 +1,4 @@
-name: CI
+name: Test on Linux and MacOS
 
 on:
   - push
@@ -6,7 +6,7 @@ on:
 
 jobs:
   tests:
-    name: ${{ matrix.os }}
+    name: Test on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     defaults:
       run:

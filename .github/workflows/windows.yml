@@ -1,0 +1,41 @@
+name: Test on Windows
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  test:
+    name: Test on Windows
+    runs-on: windows-latest
+
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v2
+
+      - name: create environment with mamba
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          channels: conda-forge
+          # auto-update-conda: true
+          auto-activate-base: true
+          activate-environment: ""
+
+      - name: check conda
+        run: conda env list
+
+      - name: install conda-app
+        run: python -m pip install -e .
+
+      - name: test install mercurial
+        run: |
+          conda-app install mercurial
+          conda env list
+
+      - name: test installed mercurial
+        run: |
+          hg version -v
+          hg debuginstall
+          cd $HOME
+          hg clone https://github.com/fluiddyn/conda-app.git
+          cd conda-app
