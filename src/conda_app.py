@@ -12,7 +12,9 @@ def check_command(conda_command):
 
     try:
         completed_process = subprocess.run(
-            [conda_command, "install", "-h"], capture_output=True
+            [conda_command, "install", "-h"],
+            capture_output=True,
+            check=False,
         )
     except FileNotFoundError:
         return False
