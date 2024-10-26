@@ -2,7 +2,6 @@
 
 [![PyPI][pypi-badge]][pypi-link]
 [![Github Actions][GH-badge]][GH-link]
-[![Appveyor][Appveyor-badge]][Appveyor-link]
 
 ## Install isolated applications using conda
 
@@ -55,5 +54,3 @@ $ conda-app uninstall pandoc
 [pypi-link]: https://pypi.python.org/pypi/conda-app/
 [GH-badge]: https://github.com/fluiddyn/conda-app/actions/workflows/ci.yml/badge.svg?branch=branch/default
 [GH-link]: https://github.com/fluiddyn/conda-app/actions
-[Appveyor-badge]: https://ci.appveyor.com/api/projects/status/github/fluiddyn/conda-app?svg=true
-[Appveyor-link]: https://ci.appveyor.com/project/fluiddyn/conda-app
