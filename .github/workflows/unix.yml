@@ -48,6 +48,7 @@ jobs:
             . $HOME/.bashrc;
           fi
           hg version -v
+          hg debuginstall
           mkdir -p $HOME/tmp
           cd $HOME/tmp
           hg clone https://github.com/fluiddyn/conda-app.git

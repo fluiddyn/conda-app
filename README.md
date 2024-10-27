@@ -1,7 +1,8 @@
 # Conda-app
 
 [![PyPI][pypi-badge]][pypi-link]
-[![Github Actions][GH-badge]][GH-link]
+[![Github Actions][GH-badge-unix]][GH-link-unix]
+[![Github Actions][GH-badge-windows]][GH-link-windows]
 
 ## Install isolated applications using conda
 
@@ -52,5 +53,7 @@ $ conda-app uninstall pandoc
 
 [pypi-badge]: https://img.shields.io/pypi/v/conda-app.svg
 [pypi-link]: https://pypi.python.org/pypi/conda-app/
-[GH-badge]: https://github.com/fluiddyn/conda-app/actions/workflows/ci.yml/badge.svg?branch=branch/default
-[GH-link]: https://github.com/fluiddyn/conda-app/actions
+[GH-badge-unix]: https://github.com/fluiddyn/conda-app/actions/workflows/unix.yml/badge.svg?branch=branch/default
+[GH-link-unix]: https://github.com/fluiddyn/conda-app/actions/workflows/unix.yml
+[GH-badge-windows]: https://github.com/fluiddyn/conda-app/actions/workflows/windows.yml/badge.svg?branch=branch/default
+[GH-link-windows]: https://github.com/fluiddyn/conda-app/actions/workflows/windows.yml
