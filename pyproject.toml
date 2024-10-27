@@ -4,7 +4,7 @@ build-backend = "pdm.backend"
 
 [project]
 name = "conda-app"
-version = "0.3.2"
+version = "0.4.0"
 description = "Install applications with conda"
 authors = [
     {name = "Pierre Augier"},
@@ -21,6 +21,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
 ]
+dependencies = ["click"]
 
 [project.urls]
 Homepage = "https://foss.heptapod.net/fluiddyn/conda-app/"
