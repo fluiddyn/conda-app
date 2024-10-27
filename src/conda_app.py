@@ -8,6 +8,8 @@ import subprocess
 from pathlib import Path
 from functools import partial
 
+import click
+
 open = partial(open, encoding="utf-8")
 
 
@@ -189,7 +191,37 @@ def get_env_names(conda_data):
     return env_names
 
 
-def install_app(app_name, other_packages=None):
+def load_data():
+    if path_data.exists():
+        with open(path_data) as file:
+            data = json.load(file)
+    else:
+        data = {"installed_apps": []}
+
+    return data
+
+
+def add_to_app_list(app_name):
+    data = load_data()
+    if app_name not in data["installed_apps"]:
+        data["installed_apps"].append(app_name)
+    with open(path_data, "w") as file:
+        json.dump(data, file)
+
+
+CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
+
+
+@click.group(context_settings=CONTEXT_SETTINGS)
+def main():
+    pass
+
+
+@main.command(context_settings=CONTEXT_SETTINGS)
+@click.argument("app_name")
+@click.argument("other_packages", nargs=-1, required=False)
+def install(app_name, other_packages=None):
+    """Install an application."""
 
     package_name = app_name + "-app"
 
@@ -343,30 +375,10 @@ def install_app(app_name, other_packages=None):
         )
 
 
-def load_data():
-    if path_data.exists():
-        with open(path_data) as file:
-            data = json.load(file)
-    else:
-        data = {"installed_apps": []}
-
-    return data
-
-
-def add_to_app_list(app_name):
-    data = load_data()
-    if app_name not in data["installed_apps"]:
-        data["installed_apps"].append(app_name)
-    with open(path_data, "w") as file:
-        json.dump(data, file)
-
-
-def list_apps():
-    data = load_data()
-    print("Installed applications:\n", data["installed_apps"])
-
-
-def uninstall_app(app_name):
+@main.command(context_settings=CONTEXT_SETTINGS)
+@click.argument("app_name")
+def uninstall(app_name):
+    """Uninstall an application."""
     conda_data = get_conda_data()
     env_names = get_env_names(conda_data)
 
@@ -385,56 +397,8 @@ def uninstall_app(app_name):
         print(f"Directory {env_path} removed")
 
 
-commands = ["install", "list", "uninstall"]
-
-
-class SmartFormatter(argparse.HelpFormatter):
-    def _split_lines(self, text, width):
-        if text.startswith("R|"):
-            return text[2:].splitlines()
-        # this is the RawTextHelpFormatter._split_lines
-        return argparse.HelpFormatter._split_lines(self, text, width)
-
-
-def main():
-
-    parser = argparse.ArgumentParser(
-        prog="conda-app",
-        description="Install applications using conda.",
-        formatter_class=SmartFormatter,
-    )
-    parser.add_argument(
-        "command",
-        type=str,
-        help=(
-            "R|Can be in:\n- install: install an application\n"
-            "- uninstall: uninstall an application\n"
-            "- list: list applications installed with conda-app\n"
-        ),
-    )
-
-    parser.add_argument(
-        "package_spec",
-        type=str,
-        nargs="?",
-        default=None,
-        help="Package to install.",
-    )
-
-    args = parser.parse_args()
-
-    if args.command not in commands:
-        print(f"command {args.command} unknown")
-        sys.exit(1)
-    elif args.command == "install":
-        install_app(args.package_spec)
-    elif args.command == "list":
-        list_apps()
-    elif args.command == "uninstall":
-        uninstall_app(args.package_spec)
-    else:
-        raise NotImplementedError
-
-
-if __name__ == "__main__":
-    main()
+@main.command(name="list", context_settings=CONTEXT_SETTINGS)
+def list_apps():
+    """List the applications installed by conda-app."""
+    data = load_data()
+    print("Installed applications:\n", data["installed_apps"])

@@ -16,6 +16,7 @@ test-run:
     - conda --version
     - pip install .
     - conda-app install mercurial
+    - conda-app install pdm python=3.11
     - conda env list
     - . ~/.bashrc
     - hg debuginstall
@@ -24,6 +25,7 @@ test-run:
     - hg clone https://github.com/fluiddyn/conda-app.git
     - cd conda-app
     - ls
+    - conda-app list
 
 build-package:
   stage: build

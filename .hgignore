@@ -4,6 +4,8 @@ syntax: glob
 *~
 *.pyc
 
+.venv
+
 build/*
 dist/*.tar.gz
 dist*
