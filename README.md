@@ -1,8 +1,9 @@
 # Conda-app
 
 [![PyPI][pypi-badge]][pypi-link]
-[![Github Actions][GH-badge-unix]][GH-link-unix]
-[![Github Actions][GH-badge-windows]][GH-link-windows]
+[![Github Actions Unix][GH-badge-unix]][GH-link-unix]
+[![Github Actions Windows][GH-badge-windows]][GH-link-windows]
+[![Heptapod CI][Heptapod-badge]][Heptapod-link]
 
 ## Install isolated applications using conda
 
@@ -57,3 +58,5 @@ $ conda-app uninstall pandoc
 [GH-link-unix]: https://github.com/fluiddyn/conda-app/actions/workflows/unix.yml
 [GH-badge-windows]: https://github.com/fluiddyn/conda-app/actions/workflows/windows.yml/badge.svg?branch=branch/default
 [GH-link-windows]: https://github.com/fluiddyn/conda-app/actions/workflows/windows.yml
+[Heptapod-badge]: https://foss.heptapod.net/fluiddyn/conda-app/badges/branch/default/pipeline.svg
+[Heptapod-link]: https://foss.heptapod.net/fluiddyn/conda-app/-/pipelines
