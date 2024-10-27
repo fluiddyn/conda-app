@@ -1,11 +1,14 @@
 import os
 import sys
-from pathlib import Path
 import json
 import argparse
 import platform
-
 import subprocess
+
+from pathlib import Path
+from functools import partial
+
+open = partial(open, encoding="utf-8")
 
 
 def check_command(conda_command):
@@ -41,7 +44,7 @@ def run_conda(*args, conda_command="conda", capture_output=True):
 
 commands_app = {"mercurial": ["hg"], "tortoisehg": ["hg", "thg"]}
 known_apps_with_app_package = ["mercurial"]
-known_apps_without_app_package = ["spyder"]
+known_apps_without_app_package = ["spyder", "pdm", "nox"]
 
 special_hgrc_windows = ""
 if os.name == "nt":
@@ -125,7 +128,7 @@ def query_yes_no(question, default="yes"):
     elif default == "no":
         prompt = " [y/N] "
     else:
-        raise ValueError("invalid default answer: '%s'" % default)
+        raise ValueError(f"invalid default answer: '{default}'")
 
     while True:
         print(question + prompt, flush=True, end="")
@@ -186,7 +189,7 @@ def get_env_names(conda_data):
     return env_names
 
 
-def install_app(app_name):
+def install_app(app_name, other_packages=None):
 
     package_name = app_name + "-app"
 
@@ -269,15 +272,13 @@ def install_app(app_name):
         else:
             conda_command = "conda"
 
-        run_conda(
-            "create",
-            "-n",
-            env_name,
-            package_name,
-            "-y",
-            conda_command=conda_command,
-            capture_output=False,
-        )
+        command = ["create", "-n", env_name, package_name]
+        if other_packages:
+            command.extend(other_packages)
+
+        command.append("-y")
+
+        run_conda(*command, conda_command=conda_command, capture_output=False)
 
         result = run_conda("env", "list")
         for line in result.split("\n"):
