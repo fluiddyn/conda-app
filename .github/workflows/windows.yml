@@ -30,7 +30,7 @@ jobs:
       - name: test install mercurial
         run: |
           conda-app install mercurial
-          conda-app install pdm python=3.11
+          conda-app install pipx python=3.12
           conda env list
           conda-app list
 

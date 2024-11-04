@@ -1,7 +1,6 @@
 import os
 import sys
 import json
-import argparse
 import platform
 import subprocess
 
@@ -10,7 +9,7 @@ from functools import partial
 
 import click
 
-open = partial(open, encoding="utf-8")
+_open = partial(open, encoding="utf-8")
 
 
 def check_command(conda_command):
@@ -46,7 +45,7 @@ def run_conda(*args, conda_command="conda", capture_output=True):
 
 commands_app = {"mercurial": ["hg"], "tortoisehg": ["hg", "thg"]}
 known_apps_with_app_package = ["mercurial"]
-known_apps_without_app_package = ["spyder", "pdm", "nox"]
+known_apps_without_app_package = ["spyder", "pipx", "pdm", "nox"]
 
 special_hgrc_windows = ""
 if os.name == "nt":
@@ -155,7 +154,7 @@ def modif_config_file(path_config, line_config, force=False):
     if not line_config.endswith("\n"):
         line_config = line_config + "\n"
     if path_config.exists():
-        with open(path_config) as file:
+        with _open(path_config) as file:
             lines = file.readlines()
         if lines and lines[-1] and not lines[-1].endswith("\n"):
             lines[-1] = lines[-1] + "\n"
@@ -165,10 +164,10 @@ def modif_config_file(path_config, line_config, force=False):
                 f"at the end of file {path_config}"
             )
 
-            with open(path_config.with_name(path_config.name + ".orig"), "w") as file:
+            with _open(path_config.with_name(path_config.name + ".orig"), "w") as file:
                 file.write("".join(lines))
 
-            with open(path_config, "a") as file:
+            with _open(path_config, "a") as file:
                 file.write("\n# line added by conda-app\n" + line_config)
 
 
@@ -193,7 +192,7 @@ def get_env_names(conda_data):
 
 def load_data():
     if path_data.exists():
-        with open(path_data) as file:
+        with _open(path_data) as file:
             data = json.load(file)
     else:
         data = {"installed_apps": []}
@@ -205,7 +204,7 @@ def add_to_app_list(app_name):
     data = load_data()
     if app_name not in data["installed_apps"]:
         data["installed_apps"].append(app_name)
-    with open(path_data, "w") as file:
+    with _open(path_data, "w") as file:
         json.dump(data, file)
 
 
@@ -213,6 +212,7 @@ CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
 
 
 @click.group(context_settings=CONTEXT_SETTINGS)
+@click.version_option()
 def main():
     pass
 
@@ -331,7 +331,7 @@ def install(app_name, other_packages=None):
                     "Filling ~/.hgrc with reasonable default "
                     "(edit to fill correct username and email address!)"
                 )
-                with open(path_home_hgrc, "w") as file:
+                with _open(path_home_hgrc, "w") as file:
                     file.write(default_hgrc)
 
         try:
@@ -341,7 +341,7 @@ def install(app_name, other_packages=None):
 
         for command in commands:
             if os.name == "nt":
-                with open(path_bin / (command + ".bat"), "w") as file:
+                with _open(path_bin / (command + ".bat"), "w") as file:
                     file.write(
                         "@echo off\n"
                         f"call conda activate {env_name}\n"

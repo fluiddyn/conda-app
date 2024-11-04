@@ -16,7 +16,7 @@ test-run:
     - conda --version
     - pip install .
     - conda-app install mercurial
-    - conda-app install pdm python=3.11
+    - conda-app install pipx python=3.11
     - conda env list
     - . ~/.bashrc
     - hg debuginstall
