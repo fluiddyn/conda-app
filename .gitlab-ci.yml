@@ -19,8 +19,10 @@ test-run:
     - . ~/.bashrc
     - conda-app install pipx python=3.11
     - conda env list
-    - conda-app uninstall pipx -y
+    - which pipx
     - pipx --version
+    - conda-app uninstall pipx -y
+    - conda env list
     - hg debuginstall
     - mkdir -p $HOME/tmp
     - cd $HOME/tmp
