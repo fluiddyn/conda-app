@@ -38,8 +38,9 @@ if not is_conda_avail and not is_mamba_avail:
 def run_conda(*args, conda_command="conda", capture_output=True):
     cmd = [conda_command]
     cmd.extend(args)
-    completed_process = subprocess.run(cmd, capture_output=capture_output, text=True)
-    completed_process.check_returncode()
+    completed_process = subprocess.run(
+        cmd, capture_output=capture_output, text=True, check=True
+    )
     return completed_process.stdout
 
 
@@ -142,7 +143,7 @@ def query_yes_no(question, default="yes"):
 
         else:
             print(
-                "Please respond with 'yes' or 'no' " "(or 'y' or 'n').",
+                "Please respond with 'yes' or 'no' (or 'y' or 'n').",
                 flush=True,
             )
 
@@ -236,11 +237,11 @@ def install(app_name, other_packages=None):
         print(f"Checking if package {package_name} exists...")
         try:
             result = run_conda("search", package_name, "--json")
-        except Exception:
+        except subprocess.CalledProcessError:
             package_name = app_name
             try:
                 result = run_conda("search", package_name, "--json")
-            except Exception:
+            except subprocess.CalledProcessError:
                 print(
                     "An exception occurred during the conda search. "
                     "It maybe that the package does not exist"
