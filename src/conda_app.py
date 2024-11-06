@@ -383,16 +383,19 @@ def uninstall(app_name):
     env_name = "_env_" + app_name
 
     if env_name not in env_names:
-        print("Nothing to do")
+        print(f"{app_name} not installed with conda-app: nothing to do")
         return
 
     if query_yes_no(f"The application {app_name} will be uninstalled.\nProceed"):
         import shutil
 
-        path_root = conda_data["root_prefix"]
-        env_path = Path(path_root) / "envs" / env_name
-        shutil.rmtree(env_path, ignore_errors=True)
-        print(f"Directory {env_path} removed")
+        for env_path in conda_data["envs"]:
+            if env_path.endswith(os.path.sep + env_name):
+                shutil.rmtree(env_path, ignore_errors=True)
+                print(f"Directory {env_path} removed")
+                break
+        else:
+            assert False, "Environment not found."
 
 
 @main.command(name="list", context_settings=CONTEXT_SETTINGS)
