@@ -183,8 +183,7 @@ def get_env_names(conda_data):
     for path_envs_dir in conda_data["envs_dirs"]:
         for path_env in envs:
             if path_env.startswith(path_envs_dir):
-                path_env = path_env[len(path_envs_dir) + 1 :]
-                env_names.append(path_env)
+                env_names.append(path_env[len(path_envs_dir) + 1 :])
     return env_names
 
 
@@ -375,7 +374,8 @@ def install(app_name, other_packages=None):
 
 @main.command(context_settings=CONTEXT_SETTINGS)
 @click.argument("app_name")
-def uninstall(app_name):
+@click.option("-y", "--yes", is_flag=True)
+def uninstall(app_name, yes):
     """Uninstall an application."""
     conda_data = get_conda_data()
     env_names = get_env_names(conda_data)
@@ -386,7 +386,10 @@ def uninstall(app_name):
         print(f"{app_name} not installed with conda-app: nothing to do")
         return
 
-    if query_yes_no(f"The application {app_name} will be uninstalled.\nProceed"):
+    if not yes:
+        yes = query_yes_no(f"The application {app_name} will be uninstalled.\nProceed")
+
+    if yes:
         import shutil
 
         for env_path in conda_data["envs"]:
