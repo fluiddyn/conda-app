@@ -16,9 +16,13 @@ test-run:
     - conda --version
     - pip install .
     - conda-app install mercurial
+    - . ~/.bashrc
     - conda-app install pipx python=3.11
     - conda env list
-    - . ~/.bashrc
+    - which pipx
+    - pipx --version
+    - conda-app uninstall pipx -y
+    - conda env list
     - hg debuginstall
     - mkdir -p $HOME/tmp
     - cd $HOME/tmp

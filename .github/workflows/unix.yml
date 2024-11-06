@@ -35,11 +35,13 @@ jobs:
           python -m pip install -e .
           which conda-app
 
-      - name: test install mercurial
+      - name: test install mercurial and pipx
         run: |
           conda-app install mercurial
+          conda-app list
           conda-app install pipx python=3.12
-          conda env list
+          conda-app list
+          conda-app uninstall pipx -y
           conda-app list
 
       - name: test installed mercurial

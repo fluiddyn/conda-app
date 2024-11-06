@@ -179,15 +179,11 @@ def get_conda_data():
 
 def get_env_names(conda_data):
     envs = conda_data["envs"]
-    path_root = conda_data["root_prefix"]
     env_names = []
-    for path_env in envs:
-        if path_env.startswith(path_root):
-            path_env = path_env[len(path_root) + 1 :]
-        if path_env.startswith("envs" + os.path.sep):
-            path_env = path_env[5:]
-
-        env_names.append(path_env)
+    for path_envs_dir in conda_data["envs_dirs"]:
+        for path_env in envs:
+            if path_env.startswith(path_envs_dir):
+                env_names.append(path_env[len(path_envs_dir) + 1 :])
     return env_names
 
 
@@ -201,12 +197,22 @@ def load_data():
     return data
 
 
+def _write_data(data):
+    with _open(path_data, "w") as file:
+        json.dump(data, file)
+
+
 def add_to_app_list(app_name):
     data = load_data()
     if app_name not in data["installed_apps"]:
         data["installed_apps"].append(app_name)
-    with _open(path_data, "w") as file:
-        json.dump(data, file)
+    _write_data(data)
+
+
+def remove_from_app_list(app_name):
+    data = load_data()
+    data["installed_apps"].remove(app_name)
+    _write_data(data)
 
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
@@ -378,7 +384,8 @@ def install(app_name, other_packages=None):
 
 @main.command(context_settings=CONTEXT_SETTINGS)
 @click.argument("app_name")
-def uninstall(app_name):
+@click.option("-y", "--yes", is_flag=True)
+def uninstall(app_name, yes):
     """Uninstall an application."""
     conda_data = get_conda_data()
     env_names = get_env_names(conda_data)
@@ -386,16 +393,23 @@ def uninstall(app_name):
     env_name = "_env_" + app_name
 
     if env_name not in env_names:
-        print("Nothing to do")
+        print(f"{app_name} not installed with conda-app: nothing to do")
         return
 
-    if query_yes_no(f"The application {app_name} will be uninstalled.\nProceed"):
+    if not yes:
+        yes = query_yes_no(f"The application {app_name} will be uninstalled.\nProceed")
+
+    if yes:
         import shutil
 
-        path_root = conda_data["root_prefix"]
-        env_path = Path(path_root) / "envs" / env_name
-        shutil.rmtree(env_path, ignore_errors=True)
-        print(f"Directory {env_path} removed")
+        for env_path in conda_data["envs"]:
+            if env_path.endswith(os.path.sep + env_name):
+                shutil.rmtree(env_path, ignore_errors=True)
+                print(f"Directory {env_path} removed")
+                remove_from_app_list(app_name)
+                break
+        else:
+            assert False, "Environment not found."
 
 
 @main.command(name="list", context_settings=CONTEXT_SETTINGS)
