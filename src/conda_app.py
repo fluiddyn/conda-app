@@ -262,7 +262,7 @@ def install(app_name, other_packages=None):
             path_bin = Path(path_root) / "condabin/app"
     else:
         if not os.name == "nt":
-            path_bin = Path.home() / ".local/bin/conda-app"
+            path_bin = Path.home() / ".local/bin/conda-app-bin"
         else:
             print(
                 "\nError: conda-app cannot be used on Windows when "
