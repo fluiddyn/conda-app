@@ -179,15 +179,12 @@ def get_conda_data():
 
 def get_env_names(conda_data):
     envs = conda_data["envs"]
-    path_root = conda_data["root_prefix"]
     env_names = []
-    for path_env in envs:
-        if path_env.startswith(path_root):
-            path_env = path_env[len(path_root) + 1 :]
-        if path_env.startswith("envs" + os.path.sep):
-            path_env = path_env[5:]
-
-        env_names.append(path_env)
+    for path_envs_dir in conda_data["envs_dirs"]:
+        for path_env in envs:
+            if path_env.startswith(path_envs_dir):
+                path_env = path_env[len(path_envs_dir) + 1 :]
+                env_names.append(path_env)
     return env_names
 
 
