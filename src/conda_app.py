@@ -197,12 +197,22 @@ def load_data():
     return data
 
 
+def _write_data(data):
+    with _open(path_data, "w") as file:
+        json.dump(data, file)
+
+
 def add_to_app_list(app_name):
     data = load_data()
     if app_name not in data["installed_apps"]:
         data["installed_apps"].append(app_name)
-    with _open(path_data, "w") as file:
-        json.dump(data, file)
+    _write_data(data)
+
+
+def remove_from_app_list(app_name):
+    data = load_data()
+    data["installed_apps"].remove(app_name)
+    _write_data(data)
 
 
 CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
@@ -396,6 +406,7 @@ def uninstall(app_name, yes):
             if env_path.endswith(os.path.sep + env_name):
                 shutil.rmtree(env_path, ignore_errors=True)
                 print(f"Directory {env_path} removed")
+                remove_from_app_list(app_name)
                 break
         else:
             assert False, "Environment not found."
