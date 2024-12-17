@@ -44,6 +44,7 @@ jobs:
           hg version -v
           hg debuginstall
           hg-setup -h
+          hg-setup init --auto
           cd $HOME
           hg clone https://github.com/fluiddyn/conda-app.git
           cd conda-app

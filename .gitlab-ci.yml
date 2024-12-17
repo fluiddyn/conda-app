@@ -25,6 +25,7 @@ test-run:
     - conda env list
     - hg debuginstall
     - hg-setup -h
+    - hg-setup init --auto
     - mkdir -p $HOME/tmp
     - cd $HOME/tmp
     - hg clone https://github.com/fluiddyn/conda-app.git
