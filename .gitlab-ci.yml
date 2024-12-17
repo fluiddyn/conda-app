@@ -24,6 +24,7 @@ test-run:
     - conda-app uninstall pipx -y
     - conda env list
     - hg debuginstall
+    - hg-setup -h
     - mkdir -p $HOME/tmp
     - cd $HOME/tmp
     - hg clone https://github.com/fluiddyn/conda-app.git
