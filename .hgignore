@@ -11,6 +11,7 @@ dist/*.tar.gz
 dist*
 .tox/*
 .coverage/*
+.ruff_cache
 
 **/tmp*.py
 

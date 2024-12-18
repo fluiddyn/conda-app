@@ -13,7 +13,6 @@ _open = partial(open, encoding="utf-8")
 
 
 def check_command(conda_command):
-
     try:
         completed_process = subprocess.run(
             [conda_command, "install", "-h"],
@@ -44,46 +43,9 @@ def run_conda(*args, conda_command="conda", capture_output=True):
     return completed_process.stdout
 
 
-commands_app = {"mercurial": ["hg"], "tortoisehg": ["hg", "thg"]}
+commands_app = {"mercurial": ["hg", "hg-setup"], "tortoisehg": ["hg", "thg"]}
 known_apps_with_app_package = ["mercurial"]
-known_apps_without_app_package = ["spyder", "pipx", "pdm", "nox"]
-
-special_hgrc_windows = ""
-if os.name == "nt":
-    special_hgrc_windows = (
-        "# avoid a bug on Windows if no pager is avail\npaginate = never\n"
-    )
-
-default_hgrc = f"""
-# File created by conda-app when installing Mercurial
-# - change your username and email address
-# - delete the character # to activate some lines
-#   (in particular the lines starting by username and editor)
-[ui]
-#username=myusername <email@adress.org>
-#editor=nano
-tweakdefaults = True
-{special_hgrc_windows}
-
-[alias]
-lg = log -G
-up = up -v
-
-[extensions]
-#hgext.extdiff =
-# only to use Mercurial with GitHub and Gitlab
-hggit =
-# more advanced extensions
-churn =
-shelve =
-rebase =
-absorb =
-evolve =
-topic =
-
-#[extdiff]
-#cmd.meld =
-"""
+known_apps_without_app_package = ["spyder", "pipx", "pdm", "nox", "hg-setup"]
 
 if os.name == "nt":
     data_dir = "AppData"
@@ -330,16 +292,6 @@ def install(app_name, other_packages=None):
                     break
 
         env_path = Path(prefix)
-
-        if app_name == "mercurial":
-            path_home_hgrc = Path.home() / ".hgrc"
-            if not path_home_hgrc.exists():
-                print(
-                    "Filling ~/.hgrc with reasonable default "
-                    "(edit to fill correct username and email address!)"
-                )
-                with _open(path_home_hgrc, "w") as file:
-                    file.write(default_hgrc)
 
         try:
             commands = commands_app[app_name]
