@@ -1,5 +1,11 @@
-dev:
-	pip install -e .
+sync:
+	pdm sync --clean
 
-black:
-	black -l 82 *.py
+lock:
+	pdm lock
+
+format:
+	pdm run format
+
+format-md:
+	mdformat *.md

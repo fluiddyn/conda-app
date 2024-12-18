@@ -13,7 +13,6 @@ _open = partial(open, encoding="utf-8")
 
 
 def check_command(conda_command):
-
     try:
         completed_process = subprocess.run(
             [conda_command, "install", "-h"],

@@ -2,6 +2,7 @@
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"
 
+
 [project]
 name = "conda-app"
 version = "0.5.0"
@@ -29,5 +30,15 @@ Homepage = "https://foss.heptapod.net/fluiddyn/conda-app/"
 [project.scripts]
 conda-app = "conda_app:main"
 
+
 [tool.pdm]
 distribution = true
+
+[tool.pdm.scripts]
+format = "ruff format src"
+
+[tool.pdm.dev-dependencies]
+dev = ["ruff", "ipython"]
+
+[tool.pdm.options]
+lock = ["-G", ":all"]
