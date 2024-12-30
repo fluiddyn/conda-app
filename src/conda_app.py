@@ -1,5 +1,4 @@
 import os
-import sys
 import json
 import platform
 import subprocess
@@ -195,8 +194,7 @@ def install(app_name, other_packages=None):
 
     if env_name not in env_names:
         print(
-            f"Creating conda environment {env_name} "
-            f"with package {package_name}... (it can be long...)",
+            f"Creating conda environment {env_name} " f"with package {package_name}...",
             flush=True,
         )
 
@@ -251,10 +249,15 @@ def install(app_name, other_packages=None):
         else:
             txt = "Open a new terminal and t"
 
+        if len(commands) > 1:
+            plural = "s"
+        else:
+            plural = ""
+
         print(
-            f"{app_name} should now be installed in\n{env_path}\n"
+            f"{app_name} is now installed in\n{env_path}\n"
             + txt
-            + f"he command(s) {commands} should be available."
+            + f"he command{plural} {commands} should be available."
         )
 
         add_to_app_list(app_name)
@@ -308,7 +311,7 @@ def ensurepath():
     """Add conda-app path to PATH."""
     conda_data = get_conda_data()
     path_bin = str(_get_path_bin(conda_data))
-    _ensurepath(path_bin)
+    _ensurepath(path_bin, verbose=True)
 
     if userpath.need_shell_restart(path_bin):
         click.echo(
@@ -319,11 +322,12 @@ def ensurepath():
         )
 
 
-def _ensurepath(path_bin):
+def _ensurepath(path_bin, verbose=False):
     path_bin = str(path_bin)
     in_current_path = userpath.in_current_path(path_bin)
     if in_current_path:
-        click.echo(f"{path_bin} is already in PATH.")
+        if verbose:
+            click.echo(f"{path_bin} is already in PATH.")
         return
 
     if os.name == "nt":
