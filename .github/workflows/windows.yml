@@ -32,10 +32,22 @@ jobs:
           conda-app install mercurial
           conda-app list
 
+      - name: test ensurepath
+        run: |
+          conda-app ensurepath
+
       - name: test install pipx
         run: |
           conda-app install pipx python=3.12
           conda-app list
+
+      - name: set PATH
+        run: |
+          Add-Content $env:GITHUB_PATH "C:\Miniconda\condabin\app"
+
+      - name: test installed pipx
+        run: |
+          which pipx
           pipx --version
           conda-app uninstall pipx -y
 

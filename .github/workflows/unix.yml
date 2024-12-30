@@ -21,10 +21,10 @@ jobs:
       - name: checkout repository
         uses: actions/checkout@v4
 
-      - name: create environment with mamba
+      - name: setup miniforge
         uses: conda-incubator/setup-miniconda@v3
         with:
-          channels: conda-forge
+          miniforge-version: latest
           python-version: 3.11
           auto-update-conda: true
           activate-environment: test
@@ -43,6 +43,11 @@ jobs:
           conda-app list
           conda-app uninstall pipx -y
           conda-app list
+
+      - name: test ensurepath
+        run: |
+          # conda run needed because userpath
+          conda run -n test conda-app ensurepath
 
       - name: test installed mercurial
         run: |
