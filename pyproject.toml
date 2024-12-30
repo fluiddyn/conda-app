@@ -5,7 +5,7 @@ build-backend = "pdm.backend"
 
 [project]
 name = "conda-app"
-version = "0.5.0"
+version = "0.6.0"
 description = "Install applications with conda"
 authors = [
     {name = "Pierre Augier"},

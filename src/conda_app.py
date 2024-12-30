@@ -49,7 +49,6 @@ def run_conda(*args, conda_command="conda", capture_output=True):
 
 commands_app = {"mercurial": ["hg", "hg-setup"], "tortoisehg": ["hg", "thg"]}
 known_apps_with_app_package = ["mercurial"]
-known_apps_without_app_package = ["spyder", "pipx", "pdm", "nox", "hg-setup"]
 
 if os.name == "nt":
     data_dir = "AppData"
@@ -172,31 +171,15 @@ def main():
 def install(app_name, other_packages=None):
     """Install an application."""
 
-    package_name = app_name + "-app"
+    if app_name in known_apps_with_app_package:
+        package_name = app_name + "-app"
+    else:
+        package_name = app_name
 
     channels = run_conda("config", "--show", "channels", "--json")
     if "conda-forge" not in channels:
         run_conda("config", "--add", "channels", "conda-forge")
         print("Warning: conda-forge channel added!")
-
-    if app_name in known_apps_without_app_package:
-        package_name = app_name
-    elif app_name not in known_apps_with_app_package:
-        print(f"Checking if package {package_name} exists...")
-        try:
-            result = run_conda("search", package_name, "--json")
-        except subprocess.CalledProcessError:
-            package_name = app_name
-            try:
-                result = run_conda("search", package_name, "--json")
-            except subprocess.CalledProcessError:
-                print(
-                    "An exception occurred during the conda search. "
-                    "It maybe that the package does not exist"
-                )
-                sys.exit(1)
-
-        print(f"Package {package_name} found!")
 
     conda_data = get_conda_data()
     path_root = conda_data["root_prefix"]
@@ -337,7 +320,6 @@ def ensurepath():
 
 
 def _ensurepath(path_bin):
-
     path_bin = str(path_bin)
     in_current_path = userpath.in_current_path(path_bin)
     if in_current_path:
