@@ -6,10 +6,14 @@ import subprocess
 
 from pathlib import Path
 from functools import partial
+from shutil import which
 
 import click
+import userpath
 
 _open = partial(open, encoding="utf-8")
+
+SHELLS = ["bash", "fish", "sh", "xonsh", "zsh"]
 
 
 def check_command(conda_command):
@@ -110,30 +114,6 @@ def query_yes_no(question, default="yes"):
             )
 
 
-def modif_config_file(path_config, line_config, force=False):
-    path_config = Path(path_config)
-    if force and not path_config.exists():
-        path_config.touch()
-    if not line_config.endswith("\n"):
-        line_config = line_config + "\n"
-    if path_config.exists():
-        with _open(path_config) as file:
-            lines = file.readlines()
-        if lines and lines[-1] and not lines[-1].endswith("\n"):
-            lines[-1] = lines[-1] + "\n"
-        if line_config not in lines:
-            print(
-                f"Add line \n{line_config.strip()}\n"
-                f"at the end of file {path_config}"
-            )
-
-            with _open(path_config.with_name(path_config.name + ".orig"), "w") as file:
-                file.write("".join(lines))
-
-            with _open(path_config, "a") as file:
-                file.write("\n# line added by conda-app\n" + line_config)
-
-
 def get_conda_data():
     result = run_conda("info", "--json")
     return json.loads(result)
@@ -218,44 +198,13 @@ def install(app_name, other_packages=None):
 
         print(f"Package {package_name} found!")
 
-    print("Running conda info... ", end="", flush=True)
     conda_data = get_conda_data()
-    print("done")
     path_root = conda_data["root_prefix"]
 
-    if conda_data["root_writable"]:
-        if os.name == "nt":
-            # quickfix: I wasn't able to permanently set the PATH on Windows
-            path_bin = Path(path_root) / "condabin"
-        else:
-            path_bin = Path(path_root) / "condabin/app"
-    else:
-        if not os.name == "nt":
-            path_bin = Path.home() / ".local/bin/conda-app-bin"
-        else:
-            print(
-                "\nError: conda-app cannot be used on Windows when "
-                "conda root is not writable. "
-                "You can retry with miniconda installed "
-                "only for you (not globally)."
-            )
-            sys.exit(1)
-
+    path_bin = _get_path_bin(conda_data)
     path_bin.mkdir(exist_ok=True, parents=True)
 
-    export_path_posix = f"export PATH={path_bin}:$PATH\n"
-    # bash
-    modif_config_file(bash_config, export_path_posix)
-
-    # zsh
-    force_zshrc = platform.system() == "Darwin"
-    modif_config_file(Path.home() / ".zshrc", export_path_posix, force=force_zshrc)
-
-    # fish
-    modif_config_file(
-        Path.home() / ".config/fish/config.fish",
-        f"set -gx PATH {path_bin} $PATH\n",
-    )
+    _ensurepath(path_bin)
 
     env_names = get_env_names(conda_data)
     env_name = "_env_" + app_name
@@ -314,7 +263,7 @@ def install(app_name, other_packages=None):
                     path_symlink.unlink()
                 path_symlink.symlink_to(path_command)
 
-        if os.name == "nt":
+        if userpath.need_shell_restart(str(path_bin)):
             txt = "T"
         else:
             txt = "Open a new terminal and t"
@@ -369,3 +318,51 @@ def list_apps():
     """List the applications installed by conda-app."""
     data = load_data()
     print("Installed applications:\n", data["installed_apps"])
+
+
+@main.command(name="ensurepath", context_settings=CONTEXT_SETTINGS)
+def ensurepath():
+    """Add conda-app path to PATH."""
+    conda_data = get_conda_data()
+    path_bin = str(_get_path_bin(conda_data))
+    _ensurepath(path_bin)
+
+    if userpath.need_shell_restart(path_bin):
+        click.echo(
+            f"{path_bin} has been been added to PATH, but you need to "
+            "open a new terminal or re-login for this PATH change to take "
+            "effect. Alternatively, you can source your shell's config file "
+            "with e.g. 'source ~/.bashrc'."
+        )
+
+
+def _ensurepath(path_bin):
+
+    path_bin = str(path_bin)
+    in_current_path = userpath.in_current_path(path_bin)
+    if in_current_path:
+        click.echo(f"{path_bin} is already in PATH.")
+        return
+
+    if os.name == "nt":
+        shells = None
+    else:
+        shells = [shell for shell in SHELLS if which(shell) is not None]
+
+    path_added = userpath.prepend(path_bin, "conda-app", shells=shells)
+
+    if not path_added:
+        click.secho(
+            f"{path_bin} is not added to the PATH environment variable "
+            "successfully. You may need to add it to PATH manually.",
+            fg="red",
+        )
+    else:
+        click.echo(f"Added {path_bin} to the PATH environment variable.")
+
+
+def _get_path_bin(conda_data):
+    if conda_data["root_writable"]:
+        return Path(conda_data["root_prefix"]) / "condabin/app"
+    else:
+        return Path.home() / ".local/bin/conda-app-bin"

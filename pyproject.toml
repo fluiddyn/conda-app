@@ -22,7 +22,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
 ]
-dependencies = ["click"]
+dependencies = ["click", "userpath>=1.9.2"]
 
 [project.urls]
 Homepage = "https://foss.heptapod.net/fluiddyn/conda-app/"
